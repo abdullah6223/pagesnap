@@ -1,14 +1,7 @@
 import sharp from "sharp";
 
 import { BrowserPool } from "./browser_pool.js";
-
-export type IConfigAPI = {
-  width?: number | null;
-  height?: number | null;
-  viewPortWidth?: number | null;
-  viewPortHeight?: number | null;
-  isFullPage?: boolean | null;
-};
+import { IConfigAPI } from "./schema.js";
 
 export type WaitForOptions = {
   timeout: number;
