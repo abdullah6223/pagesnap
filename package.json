@@ -20,7 +20,8 @@
     "generic-pool": "^3.9.0",
     "hono": "^4.3.10",
     "pino": "^9.1.0",
-    "playwright": "^1.44.1"
+    "playwright": "^1.44.1",
+    "sharp": "^0.33.4"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

@@ -1,3 +1,5 @@
+import sharp from "sharp";
+
 import { BrowserPool } from "./browser_pool.js";
 
 export type IConfigAPI = {
@@ -33,8 +35,18 @@ export class ImageRenderService implements ImageRenderInterface {
   }
 
   public async screenshot(url: string, config: IConfigAPI = {}): Promise<Buffer> {
+    let { width, height, ...defaultConfig } = this.defaultConfig;
+
+    if (!config.width && !config.height) {
+      config.width = width;
+
+      if (!config.isFullPage) {
+        config.height = height;
+      }
+    }
+
     config = {
-      ...this.defaultConfig,
+      ...defaultConfig,
       ...config,
     };
 
@@ -51,12 +63,35 @@ export class ImageRenderService implements ImageRenderInterface {
       try {
         await page.goto(url, this.NAV_OPTIONS);
 
-        return await page.screenshot({ fullPage: !!config.isFullPage });
+        let resizeWidth: number | undefined = undefined;
+        let resizeHeight: number | undefined = undefined;
+
+        if (typeof config.width === "number") {
+          resizeWidth = config.width;
+        }
+
+        if (
+          config.isFullPage &&
+          typeof resizeWidth === "undefined" &&
+          typeof config.height === "number"
+        ) {
+          resizeHeight = config.height;
+        }
+
+        return await this.resize(
+          await page.screenshot({ fullPage: !!config.isFullPage }),
+          resizeWidth,
+          resizeHeight,
+        );
       } finally {
         await page.close();
       }
     } finally {
       await this.browserPool.release(browser);
     }
+  }
+
+  private async resize(image: Buffer, width?: number, height?: number): Promise<Buffer> {
+    return await sharp(image).resize(width, height, { position: "top" }).toBuffer();
   }
 }
