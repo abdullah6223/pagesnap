@@ -51,6 +51,8 @@ export class ImageRenderService implements ImageRenderInterface {
           width: config.viewPortWidth ?? 1080,
           height: config.viewPortHeight ?? 1080,
         },
+        isMobile: !!config.isMobile,
+        colorScheme: config.isDarkMode ? "dark" : "light",
       });
 
       try {

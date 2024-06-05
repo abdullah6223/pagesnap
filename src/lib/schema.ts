@@ -31,7 +31,9 @@ export const PlainConfigSchema = z.object({
   viewPortWidth: z.coerce.number().nullish(),
   viewPortHeight: z.coerce.number().nullish(),
   forceReload: zodStringBool.nullish(),
+  isMobile: zodStringBool.nullish(),
   isFullPage: zodStringBool.nullish(),
+  isDarkMode: zodStringBool.nullish(),
 });
 export type PlainConfigSchema = z.infer<typeof PlainConfigSchema>;
 
