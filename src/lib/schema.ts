@@ -7,8 +7,25 @@ const zodStringBool = z
   .transform(x => x === "true")
   .pipe(z.boolean());
 
+const urlSchema = z
+  .string()
+  .url()
+  .refine(
+    val => {
+      try {
+        const url = new URL(val);
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch (err) {
+        return false;
+      }
+    },
+    {
+      message: "must start with http or https",
+    },
+  );
+
 export const PlainConfigSchema = z.object({
-  url: z.string().url(),
+  url: urlSchema,
   width: z.coerce.number().nullish(),
   height: z.coerce.number().nullish(),
   viewPortWidth: z.coerce.number().nullish(),
