@@ -34,6 +34,7 @@ export const PlainConfigSchema = z.object({
   isMobile: zodStringBool.nullish(),
   isFullPage: zodStringBool.nullish(),
   isDarkMode: zodStringBool.nullish(),
+  deviceScaleFactor: z.coerce.number().nullish(),
 });
 export type PlainConfigSchema = z.infer<typeof PlainConfigSchema>;
 

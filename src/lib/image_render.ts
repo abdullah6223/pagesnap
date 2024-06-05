@@ -53,6 +53,7 @@ export class ImageRenderService implements ImageRenderInterface {
         },
         isMobile: !!config.isMobile,
         colorScheme: config.isDarkMode ? "dark" : "light",
+        deviceScaleFactor: config.deviceScaleFactor ?? 1,
       });
 
       try {
