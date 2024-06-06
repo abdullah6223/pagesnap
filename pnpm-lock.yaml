@@ -32,6 +32,9 @@ importers:
       zod:
         specifier: ^3.23.8
         version: 3.23.8
+      zod-ff:
+        specifier: ^1.4.0
+        version: 1.4.0(zod@3.23.8)
     devDependencies:
       '@types/node':
         specifier: ^20.14.0
@@ -948,6 +951,12 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  zod-ff@1.4.0:
+    resolution: {integrity: sha512-S8ugA4jMWWddU+0tECg06a1Ook/AzHr8HRTF9fs6NkDCGSvk0cfvyVnkKvKVeEWiC4csxjssbN688FVMmHZkZA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      zod: ^3.22.4
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
@@ -1898,5 +1907,9 @@ snapshots:
       isexe: 2.0.0
 
   wrappy@1.0.2: {}
+
+  zod-ff@1.4.0(zod@3.23.8):
+    dependencies:
+      zod: 3.23.8
 
   zod@3.23.8: {}
