@@ -1,7 +1,7 @@
 import { Options } from "generic-pool";
 
 import { BrowserPool } from "./browser_pool.js";
-import { ImageRenderService } from "./image_render.js";
+import { ImageRenderService, WaitForOptions } from "./image_render.js";
 import { ImageStorage } from "./storage/_base.js";
 import { StubStorageProvider } from "./storage/stub.js";
 
@@ -10,12 +10,23 @@ export function createBrowserPool(opts: Options = {}) {
 }
 
 export function createImageRenderService(browserPool: BrowserPool) {
+  const navigationOptions: Partial<WaitForOptions> = {};
+  switch (process.env.BROWSER_WAIT_UNTIL) {
+    case "load":
+    case "domcontentloaded":
+    case "networkidle":
+      navigationOptions.waitUntil = process.env.BROWSER_WAIT_UNTIL;
+      break;
+    default:
+      break;
+  }
+
   const defaultConfig = {
     width: 250,
     height: 250,
   };
 
-  return new ImageRenderService(browserPool, defaultConfig);
+  return new ImageRenderService(browserPool, defaultConfig, navigationOptions);
 }
 
 export function createImageStorageService(): ImageStorage {
