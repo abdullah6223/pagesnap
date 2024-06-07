@@ -39,10 +39,12 @@ export function createImageStorageService(): ImageStorage {
       imageStorage = new AmazonS3StorageProvider(
         new S3Client({
           region: process.env.AWS_DEFAULT_REGION ?? "us-east-1",
+          endpoint: process.env.AWS_ENDPOINT_URL_S3,
           credentials: {
             accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
           },
+          forcePathStyle: process.env.AWS_FORCE_PATH_STYLE === "true",
         }),
         process.env.AWS_BUCKET!,
       );
