@@ -3,6 +3,7 @@ import { Options } from "generic-pool";
 import { BrowserPool } from "./browser_pool.js";
 import { ImageRenderService, WaitForOptions } from "./image_render.js";
 import { ImageStorage } from "./storage/_base.js";
+import { FileSystemStorageProvider } from "./storage/filesystem.js";
 import { StubStorageProvider } from "./storage/stub.js";
 
 export function createBrowserPool(opts: Options = {}) {
@@ -32,6 +33,10 @@ export function createImageRenderService(browserPool: BrowserPool) {
 export function createImageStorageService(): ImageStorage {
   let imageStorage: ImageStorage;
   switch (process.env.STORAGE_PROVIDER) {
+    case "filesystem":
+      const filePath = process.env.IMAGE_STORAGE_PATH!;
+      imageStorage = new FileSystemStorageProvider(filePath);
+      break;
     case "stub":
     default:
       imageStorage = new StubStorageProvider();
