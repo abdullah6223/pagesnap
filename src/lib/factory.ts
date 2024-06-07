@@ -1,9 +1,11 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { Options } from "generic-pool";
+import nano from "nano";
 
 import { BrowserPool } from "./browser_pool.js";
 import { ImageRenderService, WaitForOptions } from "./image_render.js";
 import { ImageStorage } from "./storage/_base.js";
+import { CouchDbStorageProvider } from "./storage/couch-db.js";
 import { FileSystemStorageProvider } from "./storage/filesystem.js";
 import { AmazonS3StorageProvider } from "./storage/s3.js";
 import { StubStorageProvider } from "./storage/stub.js";
@@ -47,6 +49,16 @@ export function createImageStorageService(): ImageStorage {
           forcePathStyle: process.env.AWS_FORCE_PATH_STYLE === "true",
         }),
         process.env.AWS_BUCKET!,
+      );
+      break;
+    case "couchdb":
+      const protocol = process.env.COUCH_DB_PROTOCOL;
+      const user = process.env.COUCH_DB_USER;
+      const pass = process.env.COUCH_DB_PASS;
+      const host = process.env.COUCH_DB_HOST;
+      const port = process.env.COUCH_DB_PORT;
+      imageStorage = new CouchDbStorageProvider(
+        nano(`${protocol}://${user}:${pass}@${host}:${port}`),
       );
       break;
     case "filesystem":
