@@ -15,6 +15,7 @@
   },
   "engineStrict": true,
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.583.0",
     "@hono/node-server": "^1.11.1",
     "dotenv": "^16.4.5",
     "generic-pool": "^3.9.0",

@@ -1,9 +1,11 @@
+import { S3Client } from "@aws-sdk/client-s3";
 import { Options } from "generic-pool";
 
 import { BrowserPool } from "./browser_pool.js";
 import { ImageRenderService, WaitForOptions } from "./image_render.js";
 import { ImageStorage } from "./storage/_base.js";
 import { FileSystemStorageProvider } from "./storage/filesystem.js";
+import { AmazonS3StorageProvider } from "./storage/s3.js";
 import { StubStorageProvider } from "./storage/stub.js";
 
 export function createBrowserPool(opts: Options = {}) {
@@ -33,6 +35,18 @@ export function createImageRenderService(browserPool: BrowserPool) {
 export function createImageStorageService(): ImageStorage {
   let imageStorage: ImageStorage;
   switch (process.env.STORAGE_PROVIDER) {
+    case "s3":
+      imageStorage = new AmazonS3StorageProvider(
+        new S3Client({
+          region: process.env.AWS_DEFAULT_REGION ?? "us-east-1",
+          credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+          },
+        }),
+        process.env.AWS_BUCKET!,
+      );
+      break;
     case "filesystem":
       const filePath = process.env.IMAGE_STORAGE_PATH!;
       imageStorage = new FileSystemStorageProvider(filePath);
