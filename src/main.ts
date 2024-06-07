@@ -4,16 +4,19 @@ import { serve } from "@hono/node-server";
 
 import { createApplication } from "./app.js";
 import { BrowserPool } from "./lib/browser_pool.js";
-import { ImageRenderService } from "./lib/image_render.js";
+import {
+  createBrowserPool,
+  createImageRenderService,
+  createImageStorageService,
+} from "./lib/factory.js";
 import { logger } from "./lib/logger.js";
-import { StubStorageProvider } from "./lib/storage/stub.js";
 
 async function main() {
-  const imageStorageService = new StubStorageProvider();
+  const imageStorageService = createImageStorageService();
 
-  const browserPool: BrowserPool = new BrowserPool();
+  const browserPool: BrowserPool = createBrowserPool();
 
-  const imageRenderService = new ImageRenderService(browserPool);
+  const imageRenderService = createImageRenderService(browserPool);
 
   const app = createApplication(imageRenderService, imageStorageService);
 
