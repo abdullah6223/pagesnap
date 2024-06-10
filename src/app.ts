@@ -5,6 +5,7 @@ import { logger } from "./lib/logger.js";
 import { PlainConfigSchema } from "./lib/schema.js";
 import { ImageStorage } from "./lib/storage/_base.js";
 import { handleAllowListMiddleware } from "./middlewares/allow_list.js";
+import { handleBlockListMiddleware } from "./middlewares/block_list.js";
 import { handleExtractQueryParamsMiddleware } from "./middlewares/extract_query_params.js";
 import { getIndex } from "./routes/index.js";
 
@@ -20,6 +21,15 @@ export function createApplication(imageRenderService: ImageRenderInterface, imag
   app.get("/ping", c => c.json("pong"));
 
   app.use("/", handleExtractQueryParamsMiddleware());
+
+  if (process.env.BLOCK_LIST && process.env.BLOCK_LIST.trim() !== "") {
+    const allowList = process.env.BLOCK_LIST.split(",").map(url => {
+      url = url.trim().replace(/https?:\/\//g, "");
+      return new URL(`http://${url}`).host;
+    });
+    logger.info(`Blocked Domains: ${allowList.join(", ")}`);
+    app.use("/", handleBlockListMiddleware(allowList));
+  }
 
   if (process.env.ALLOW_LIST && process.env.ALLOW_LIST.trim() !== "") {
     const allowList = process.env.ALLOW_LIST.split(",").map(url => {
