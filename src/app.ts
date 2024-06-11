@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { secureHeaders } from "hono/secure-headers";
+import { ContentfulStatusCode } from "hono/utils/http-status";
 
 import { ImageRenderInterface } from "./lib/image_render.js";
 import { logger } from "./lib/logger.js";
@@ -22,6 +23,14 @@ export function createApplication(imageRenderService: ImageRenderInterface, imag
   app.use(secureHeaders());
 
   app.get("/ping", c => c.json("pong"));
+
+  app.onError((err, c) => {
+    let status: ContentfulStatusCode = 500;
+    if ("status" in err && typeof err.status === "number") {
+      status = err.status as ContentfulStatusCode;
+    }
+    return c.json({ message: err.message }, status);
+  });
 
   app.use("/", handleExtractQueryParamsMiddleware());
 
