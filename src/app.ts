@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { secureHeaders } from "hono/secure-headers";
 
 import { ImageRenderInterface } from "./lib/image_render.js";
 import { logger } from "./lib/logger.js";
@@ -17,6 +18,8 @@ export type AppEnv = { Variables: Variables };
 
 export function createApplication(imageRenderService: ImageRenderInterface, imageStorageService: ImageStorage) {
   const app = new Hono<AppEnv>();
+
+  app.use(secureHeaders());
 
   app.get("/ping", c => c.json("pong"));
 
