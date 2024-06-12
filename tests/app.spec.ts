@@ -24,6 +24,29 @@ suite("app", () => {
     });
   });
 
+  describe("GET /metrics", () => {
+    beforeEach(() => {
+      process.env.METRICS = "true";
+      app = createApplication(browserPool, imageRenderService, imageStorageService);
+    });
+
+    it("success", async () => {
+      const res = await app.request("/metrics");
+      expect(res.status).toBe(200);
+      expect(await res.json()).toStrictEqual({
+        poolMetrics: {
+          available: 0,
+          borrowed: 0,
+          max: 10,
+          min: 2,
+          pending: 0,
+          size: 2,
+          spareResourceCapacity: 8,
+        },
+      });
+    });
+  });
+
   describe("GET /?url=", () => {
     it("succeeds with minimal", async () => {
       const res = await app.request("/?url=https://google.com");
