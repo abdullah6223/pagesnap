@@ -2,17 +2,18 @@ import type { Hono } from "hono";
 import { it, describe, suite, expect, beforeEach } from "vitest";
 
 import { type AppEnv, createApplication } from "../src/app.js";
-import { createImageStorageService } from "../src/lib/factory.js";
+import { createBrowserPool, createImageStorageService } from "../src/lib/factory.js";
 import { StubImageRenderService } from "./helpers/stubs.js";
 
 suite("app", () => {
   let app: Hono<AppEnv>;
 
+  const browserPool = createBrowserPool();
   const imageStorageService = createImageStorageService();
   const imageRenderService = new StubImageRenderService();
 
   beforeEach(() => {
-    app = createApplication(imageRenderService, imageStorageService);
+    app = createApplication(browserPool, imageRenderService, imageStorageService);
   });
 
   describe("GET /ping", () => {

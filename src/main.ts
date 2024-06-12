@@ -18,7 +18,7 @@ async function main() {
 
   const imageRenderService = createImageRenderService(browserPool);
 
-  const app = createApplication(imageRenderService, imageStorageService);
+  const app = createApplication(browserPool, imageRenderService, imageStorageService);
 
   const port = Number(process.env.PORT) || 3089;
   serve({ fetch: app.fetch, port });

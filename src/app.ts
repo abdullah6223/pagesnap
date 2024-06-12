@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { secureHeaders } from "hono/secure-headers";
 import { ContentfulStatusCode } from "hono/utils/http-status";
 
+import { BrowserPool } from "./lib/browser_pool.js";
 import { ImageRenderInterface } from "./lib/image_render.js";
 import { logger } from "./lib/logger.js";
 import { PlainConfigSchema } from "./lib/schema.js";
@@ -17,10 +18,18 @@ export type Variables = {
 };
 export type AppEnv = { Variables: Variables };
 
-export function createApplication(imageRenderService: ImageRenderInterface, imageStorageService: ImageStorage) {
+export function createApplication(
+  browserPool: BrowserPool,
+  imageRenderService: ImageRenderInterface,
+  imageStorageService: ImageStorage,
+) {
   const app = new Hono<AppEnv>();
 
   app.use(secureHeaders());
+
+  if (process.env.METRICS === "true") {
+    app.get("/metrics", c => c.json({ poolMetrics: browserPool.poolMetrics }));
+  }
 
   app.get("/ping", c => c.json("pong"));
 
