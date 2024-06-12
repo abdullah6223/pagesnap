@@ -8,6 +8,16 @@ export type BrowserPoolConstructorArgs = {
   browserOpts?: never;
 };
 
+export type PoolMetrics = {
+  spareResourceCapacity: number;
+  size: number;
+  available: number;
+  borrowed: number;
+  pending: number;
+  max: number;
+  min: number;
+};
+
 export class BrowserPool {
   private pool: genericPool.Pool<Browser>;
 
@@ -33,6 +43,18 @@ export class BrowserPool {
     };
     logger.info(poolOpts);
     this.pool = genericPool.createPool<Browser>(this.factory, poolOpts);
+  }
+
+  get poolMetrics(): PoolMetrics {
+    return {
+      spareResourceCapacity: this.pool.spareResourceCapacity,
+      size: this.pool.size,
+      available: this.pool.available,
+      borrowed: this.pool.borrowed,
+      pending: this.pool.pending,
+      max: this.pool.max,
+      min: this.pool.min,
+    };
   }
 
   async acquire(): Promise<Browser> {
