@@ -22,7 +22,7 @@ export class ImageRenderService implements ImageRenderInterface {
   ) {
     this.NAV_OPTIONS = {
       waitUntil: "domcontentloaded",
-      timeout: 10000,
+      timeout: Number(process.env.BROWSER_TIMEOUT) || 10000,
       ...navigationOptions,
     };
   }
