@@ -14,6 +14,9 @@ Main features:
 - **Configurable rendering**: output width and height, browser viewport size, full-page capture, mobile emulation, dark mode and device scale factor, all as query parameters.
 - **Pluggable image cache**: store rendered images in Amazon S3 (or any S3-compatible store such as MinIO), CouchDB or the local filesystem, or turn caching off with the stub provider.
 - **Browser pool**: Chromium instances are reused through a configurable pool instead of launched per request.
+- **Domain allow and block lists**: restrict which hosts may be screenshotted.
+- **Encrypted requests**: optionally require all request options to arrive as one AES-GCM encrypted `hash` parameter, so clients cannot change the options.
+- **Health and metrics endpoints**: `GET /ping` and an optional `GET /metrics` that reports browser pool usage.
 
 ## Usage
 
@@ -49,6 +52,16 @@ Rendered images can be cached so the same request is not rendered twice. Pick a 
 | Local directory | `filesystem` | `IMAGE_STORAGE_PATH` |
 | Amazon S3 / S3-compatible | `s3` | `AWS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_ENDPOINT_URL_S3`, `AWS_FORCE_PATH_STYLE` |
 | CouchDB | `couchdb` | `COUCH_DB_PROTOCOL`, `COUCH_DB_HOST`, `COUCH_DB_PORT`, `COUCH_DB_USER`, `COUCH_DB_PASS` |
+
+## Encryption
+
+Set `CRYPTO_KEY` to an AES-GCM key in JWK JSON format to turn on encryption mode. The server then rejects plain query parameters, and every request must send its options as one encrypted value:
+
+```
+http://localhost:3089/?hash=str-enc:...
+```
+
+The `hash` value is the JSON options object (for example `{"url":"https://example.com","width":600}`) encrypted with the same key using `@jmondi/string-encrypt-decrypt`. Without `CRYPTO_KEY`, requests that send a `hash` are rejected.
 
 ## License
 
