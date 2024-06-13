@@ -33,6 +33,9 @@ export function handleExtractQueryParamsMiddleware(encryptionService?: StringEnc
       const decryptedString = await encryptionService.decrypt(hash);
       input = JSON.parse(decryptedString);
     } else {
+      if (encryptionService) {
+        throw new HTTPException(400, { message: "This server must use encryption" });
+      }
       input = params;
     }
 
