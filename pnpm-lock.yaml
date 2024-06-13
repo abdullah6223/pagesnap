@@ -14,6 +14,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.11.1
         version: 1.11.2
+      '@jmondi/string-encrypt-decrypt':
+        specifier: ^0.0.6
+        version: 0.0.6
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -240,6 +243,12 @@ packages:
   '@aws-sdk/xml-builder@3.575.0':
     resolution: {integrity: sha512-cWgAwmbFYNCFzPwxL705+lWps0F3ZvOckufd2KKoEZUmtpVw9/txUXNrPySUXSmRTSRhoatIMABNfStWR043bQ==}
     engines: {node: '>=16.0.0'}
+
+  '@deno/shim-crypto@0.3.1':
+    resolution: {integrity: sha512-ed4pNnfur6UbASEgF34gVxR9p7Mc3qF+Ygbmjiil8ws5IhNFhPDFy5vE5hQAUA9JmVsSxXPcVLM5Rf8LOZqQ5Q==}
+
+  '@deno/shim-deno-test@0.5.0':
+    resolution: {integrity: sha512-4nMhecpGlPi0cSzT67L+Tm+GOJqvuk8gqHBziqcUQOarnuIax1z96/gJHCSIz2Z0zhxE6Rzwb3IZXPtFh51j+w==}
 
   '@emnapi/runtime@1.2.0':
     resolution: {integrity: sha512-bV21/9LQmcQeCPEg3BDFtvwL6cwiTMksYNWQQ4KOxCZikEGalWtenoZ0wCiukJINlGCIi2KXx01g4FoH/LxpzQ==}
@@ -514,6 +523,10 @@ packages:
   '@jest/schemas@29.6.3':
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  '@jmondi/string-encrypt-decrypt@0.0.6':
+    resolution: {integrity: sha512-RhpZYDN/g1zj381hwiXXMi58AjS+c7iJAJI/HoCIDeetnt0y8ZI9//KCCTJt+UM1pZQ2OUtNvOJheG0BC2f/3g==}
+    engines: {node: '>=20.0.0'}
 
   '@jridgewell/sourcemap-codec@1.4.15':
     resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
@@ -2324,6 +2337,10 @@ snapshots:
       '@smithy/types': 3.0.0
       tslib: 2.6.2
 
+  '@deno/shim-crypto@0.3.1': {}
+
+  '@deno/shim-deno-test@0.5.0': {}
+
   '@emnapi/runtime@1.2.0':
     dependencies:
       tslib: 2.6.2
@@ -2478,6 +2495,11 @@ snapshots:
   '@jest/schemas@29.6.3':
     dependencies:
       '@sinclair/typebox': 0.27.8
+
+  '@jmondi/string-encrypt-decrypt@0.0.6':
+    dependencies:
+      '@deno/shim-crypto': 0.3.1
+      '@deno/shim-deno-test': 0.5.0
 
   '@jridgewell/sourcemap-codec@1.4.15': {}
 

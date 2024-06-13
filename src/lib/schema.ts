@@ -37,5 +37,6 @@ export const PlainConfigSchema = z.object({
   deviceScaleFactor: z.coerce.number().nullish(),
 });
 export type PlainConfigSchema = z.infer<typeof PlainConfigSchema>;
+export const HashSchema = z.string().startsWith("str-enc:");
 
 export type IConfigAPI = Omit<PlainConfigSchema, "url">;

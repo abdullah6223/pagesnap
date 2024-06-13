@@ -1,3 +1,4 @@
+import { StringEncrypter } from "@jmondi/string-encrypt-decrypt";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { parseForm } from "zod-ff";
@@ -16,11 +17,26 @@ function inputToParams(input: PlainConfigSchema): URLSearchParams {
   return out;
 }
 
-export function handleExtractQueryParamsMiddleware() {
+export function handleExtractQueryParamsMiddleware(encryptionService?: StringEncrypter) {
   return async (c: Context<AppEnv>, next: () => Promise<void>) => {
     const params = new URL(c.req.url).searchParams;
+    let input: PlainConfigSchema | URLSearchParams;
 
-    const { validData, errors } = parseForm({ data: params, schema: PlainConfigSchema });
+    if (params.has("hash")) {
+      if (!encryptionService) {
+        throw new HTTPException(400, { message: "This server is not configured for encryption" });
+      }
+      const hash = params.get("hash");
+      if (typeof hash !== "string" || !hash.startsWith("str-enc:")) {
+        throw new HTTPException(400, { message: "Invalid hash" });
+      }
+      const decryptedString = await encryptionService.decrypt(hash);
+      input = JSON.parse(decryptedString);
+    } else {
+      input = params;
+    }
+
+    const { validData, errors } = parseForm({ data: input, schema: PlainConfigSchema });
 
     if (errors) {
       let message: string = "Invalid query parameters: ";

@@ -1,3 +1,4 @@
+import { StringEncrypter } from "@jmondi/string-encrypt-decrypt";
 import { Hono } from "hono";
 import { secureHeaders } from "hono/secure-headers";
 import { ContentfulStatusCode } from "hono/utils/http-status";
@@ -22,6 +23,7 @@ export function createApplication(
   browserPool: BrowserPool,
   imageRenderService: ImageRenderInterface,
   imageStorageService: ImageStorage,
+  stringEncrypter?: StringEncrypter,
 ) {
   const app = new Hono<AppEnv>();
 
@@ -41,7 +43,7 @@ export function createApplication(
     return c.json({ message: err.message }, status);
   });
 
-  app.use("/", handleExtractQueryParamsMiddleware());
+  app.use("/", handleExtractQueryParamsMiddleware(stringEncrypter));
 
   if (process.env.BLOCK_LIST && process.env.BLOCK_LIST.trim() !== "") {
     const allowList = process.env.BLOCK_LIST.split(",").map(url => {
