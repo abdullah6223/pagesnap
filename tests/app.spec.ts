@@ -1,3 +1,4 @@
+import { StringEncrypter } from "@jmondi/string-encrypt-decrypt";
 import type { Hono } from "hono";
 import { it, describe, suite, expect, beforeEach } from "vitest";
 
@@ -79,6 +80,40 @@ suite("app", () => {
         const res = await app.request(`/?url=${invalidDomain}`);
         expect(res.status).toBe(400);
         expect(await res.text()).toMatch(/url - must start with http or https/gi);
+      });
+    });
+  });
+
+  describe("GET /?hash=", () => {
+    describe("without CRYPTO_KEY", () => {
+      it("throws when server is not configured for encryption", async () => {
+        const res = await app.request(
+          "/?hash=str-enc:a/4xkic0kY8scM3QRJIiLLtQ3NhZxEudhmd7RZDbsuuguXkamhZe0HdW9LmnZxtGCtf0GAPO5II85fE8rSkdFNIbBATyS/INKM0hmw==:a4S74z7c4DQVtijl",
+        );
+        const body = await res.json();
+        expect(res.status).toBe(400);
+        expect(body.message).toMatch(/This server is not configured for encryption/);
+      });
+    });
+
+    describe("with CRYPTO_KEY", () => {
+      beforeEach(async () => {
+        const cryptoKey =
+          '{"kty":"oct","k":"cq8cebOn49gXxcjoRbjP93z4OpzCkyz4WJSgPnvR4ds","alg":"A256GCM","key_ops":["encrypt","decrypt"],"ext":true}';
+        const stringEncrypter = await StringEncrypter.fromCryptoString(cryptoKey);
+        app = createApplication(
+          browserPool,
+          imageRenderService,
+          imageStorageService,
+          stringEncrypter,
+        );
+      });
+
+      it("succeeds!", async () => {
+        const res = await app.request(
+          "/?hash=str-enc:a/4xkic0kY8scM3QRJIiLLtQ3NhZxEudhmd7RZDbsuuguXkamhZe0HdW9LmnZxtGCtf0GAPO5II85fE8rSkdFNIbBATyS/INKM0hmw==:a4S74z7c4DQVtijl",
+        );
+        expect(res.status).toBe(200);
       });
     });
   });
