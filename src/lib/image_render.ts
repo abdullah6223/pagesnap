@@ -48,8 +48,8 @@ export class ImageRenderService implements ImageRenderInterface {
     try {
       const page = await browser.newPage({
         viewport: {
-          width: config.viewPortWidth ?? 1080,
-          height: config.viewPortHeight ?? 1080,
+          width: config.viewPortWidth!,
+          height: config.viewPortHeight!,
         },
         isMobile: !!config.isMobile,
         colorScheme: config.isDarkMode ? "dark" : "light",
