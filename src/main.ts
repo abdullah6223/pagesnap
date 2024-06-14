@@ -12,6 +12,8 @@ import {
 } from "./lib/factory.js";
 import { logger } from "./lib/logger.js";
 
+let server: ReturnType<typeof serve>;
+
 async function main() {
   const encryptionService = process.env.CRYPTO_KEY
     ? await StringEncrypter.fromCryptoString(process.env.CRYPTO_KEY)
@@ -31,7 +33,18 @@ async function main() {
   );
 
   const port = Number(process.env.PORT) || 3089;
-  serve({ fetch: app.fetch, port });
+  server = serve({ fetch: app.fetch, port });
+
+  process.on("SIGINT", async () => {
+    logger.info("Playwright Shutdown [STARTING]");
+    logger.info("Playwright Shutdown [DONE]");
+    logger.info("Server Shutdown [STARTING]");
+    server?.close();
+    await browserPool.drain();
+    logger.info("Server Shutdown [DONE]");
+    logger.info("EXITING...");
+    process.exit(0);
+  });
 
   logger.info(`Server is running on port http://localhost:${port}/ping`);
 }
