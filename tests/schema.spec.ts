@@ -12,13 +12,13 @@ describe("clampDimensions", () => {
       ...baseInput,
       width: 800,
       height: 600,
-      viewPortWidth: 1280,
-      viewPortHeight: 720,
+      viewportWidth: 1280,
+      viewportHeight: 720,
     });
     expect(out.width).toBe(800);
     expect(out.height).toBe(600);
-    expect(out.viewPortWidth).toBe(1280);
-    expect(out.viewPortHeight).toBe(720);
+    expect(out.viewportWidth).toBe(1280);
+    expect(out.viewportHeight).toBe(720);
   });
 
   it("clamps width and height above the max", () => {
@@ -27,21 +27,31 @@ describe("clampDimensions", () => {
     expect(out.height).toBe(MAX_DIMENSION);
   });
 
-  it("clamps viewPortWidth and viewPortHeight (not width) when they exceed the max", () => {
+  it("clamps viewportWidth and viewportHeight (not width) when they exceed the max", () => {
     const out = clampDimensions({
       ...baseInput,
-      viewPortWidth: 5000,
-      viewPortHeight: 5000,
+      viewportWidth: 5000,
+      viewportHeight: 5000,
+    });
+    expect(out.viewportWidth).toBe(MAX_DIMENSION);
+    expect(out.viewportHeight).toBe(MAX_DIMENSION);
+    expect(out.width).toBeUndefined();
+    expect(out.height).toBeUndefined();
+  });
+
+  it("clamps the deprecated viewPortWidth/viewPortHeight aliases", () => {
+    const out = clampDimensions({
+      ...baseInput,
+      viewPortWidth: 9000,
+      viewPortHeight: 9000,
     });
     expect(out.viewPortWidth).toBe(MAX_DIMENSION);
     expect(out.viewPortHeight).toBe(MAX_DIMENSION);
-    expect(out.width).toBeUndefined();
-    expect(out.height).toBeUndefined();
   });
 
   it("preserves null/undefined for absent fields", () => {
     const out = clampDimensions(baseInput);
     expect(out.width).toBeUndefined();
-    expect(out.viewPortWidth).toBeUndefined();
+    expect(out.viewportWidth).toBeUndefined();
   });
 });
