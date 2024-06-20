@@ -2,6 +2,7 @@
   "name": "pagesnap",
   "version": "2.1.4",
   "type": "module",
+  "main": "dist/mod.js",
   "scripts": {
     "clean": "rm -rf dist/*",
     "serve": "node -r dotenv/config dist/main.js",
