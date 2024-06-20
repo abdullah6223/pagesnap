@@ -7,6 +7,7 @@ import { AppEnv } from "../app.js";
 
 import { PlainConfigSchema, clampDimensions } from "../lib/schema.js";
 import { buildImageId } from "../lib/utils.js";
+import { logger } from "../lib/logger.js";
 
 function inputToParams(input: PlainConfigSchema): URLSearchParams {
   const out = new URLSearchParams();
@@ -40,6 +41,13 @@ export function handleExtractQueryParamsMiddleware(encryptionService?: StringEnc
     }
 
     const { validData, errors } = parseForm({ data: input, schema: PlainConfigSchema });
+
+    if (validData?.viewPortWidth !== undefined) {
+      logger.warn("'viewPortWidth' is deprecated, please use 'viewportWidth'");
+    }
+    if (validData?.viewPortHeight !== undefined) {
+      logger.warn("'viewPortHeight' is deprecated, please use 'viewportHeight'");
+    }
 
     if (errors) {
       let message: string = "Invalid query parameters: ";
