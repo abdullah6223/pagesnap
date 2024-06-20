@@ -5,7 +5,7 @@ import { parseForm } from "zod-ff";
 
 import { AppEnv } from "../app.js";
 
-import { PlainConfigSchema } from "../lib/schema.js";
+import { PlainConfigSchema, clampDimensions } from "../lib/schema.js";
 import { buildImageId } from "../lib/utils.js";
 
 function inputToParams(input: PlainConfigSchema): URLSearchParams {
@@ -53,9 +53,10 @@ export function handleExtractQueryParamsMiddleware(encryptionService?: StringEnc
       throw new HTTPException(400, { message, cause: errors });
     }
 
-    const imageId = buildImageId(validData.url, inputToParams(validData));
+    const clamped = clampDimensions(validData);
+    const imageId = buildImageId(clamped.url, inputToParams(clamped));
 
-    c.set("input", validData);
+    c.set("input", clamped);
     c.set("imageId", imageId);
 
     await next();
