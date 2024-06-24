@@ -1,10 +1,11 @@
 export function configToString(configAPI: URLSearchParams) {
-  let result = "";
+  const entries: [string, string][] = [];
   for (const [key, value] of configAPI) {
     if (key === "url") continue;
-    result += `_${key}-${value}`;
+    entries.push([key, value]);
   }
-  return result;
+  entries.sort(([a], [b]) => a.localeCompare(b));
+  return entries.map(([key, value]) => `_${key}-${value}`).join("");
 }
 
 function isoDate(date: Date): string {
