@@ -47,6 +47,9 @@ async function main() {
   });
 
   logger.info(`Server is running on port http://localhost:${port}/ping`);
+  if (process.env.NODE_ENV === "development") {
+    logger.info(`http://localhost:${port}/?url=https://jasonraimondi.com/resume&isFullPage=true`);
+  }
 }
 
 main()
