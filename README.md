@@ -11,12 +11,14 @@ It is meant for developers who want a screenshot endpoint they can run on their 
 Main features:
 
 - **URL to PNG over HTTP**: `GET /?url=https://example.com` returns a PNG image.
-- **Configurable rendering**: output width and height, browser viewport size, full-page capture, mobile emulation, dark mode and device scale factor, all as query parameters.
+- **Configurable rendering**: output `width`/`height`, browser `viewportWidth`/`viewportHeight`, full-page capture, mobile emulation, dark mode and device scale factor, all as query parameters.
+- **Sensible limits**: every dimension is capped at 1920px, and only `http`/`https` URLs are accepted.
 - **Pluggable image cache**: store rendered images in Amazon S3 (or any S3-compatible store such as MinIO), CouchDB or the local filesystem, or turn caching off with the stub provider.
 - **Browser pool**: Chromium instances are reused through a configurable pool instead of launched per request.
 - **Domain allow and block lists**: restrict which hosts may be screenshotted.
 - **Encrypted requests**: optionally require all request options to arrive as one AES-GCM encrypted `hash` parameter, so clients cannot change the options.
 - **Health and metrics endpoints**: `GET /ping` and an optional `GET /metrics` that reports browser pool usage.
+- **Usable as a library**: `src/mod.ts` exports the render service, browser pool, schema and storage providers.
 
 ## Usage
 
@@ -62,6 +64,15 @@ http://localhost:3089/?hash=str-enc:...
 ```
 
 The `hash` value is the JSON options object (for example `{"url":"https://example.com","width":600}`) encrypted with the same key using `@jmondi/string-encrypt-decrypt`. Without `CRYPTO_KEY`, requests that send a `hash` are rejected.
+
+## Docker
+
+```bash
+docker build -t pagesnap .
+docker run --rm -p 3089:3089 pagesnap
+```
+
+`docker compose up --build` starts the app together with CouchDB and MinIO for local testing.
 
 ## License
 
