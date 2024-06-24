@@ -1,7 +1,9 @@
+const NON_CACHE_PARAMS = new Set(["url", "hash", "forceReload"]);
+
 export function configToString(configAPI: URLSearchParams) {
   const entries: [string, string][] = [];
   for (const [key, value] of configAPI) {
-    if (key === "url") continue;
+    if (NON_CACHE_PARAMS.has(key)) continue;
     entries.push([key, value]);
   }
   entries.sort(([a], [b]) => a.localeCompare(b));
