@@ -5,7 +5,9 @@ import { logger } from "../logger.js";
 import { ImageStorage } from "./_base.js";
 
 export class FileSystemStorageProvider implements ImageStorage {
-  constructor(private readonly storagePath: string) {}
+  constructor(private readonly storagePath: string) {
+    this.createStorageDirectory().then();
+  }
 
   async fetchImage(imageId: string): Promise<Buffer | null> {
     const imagePath = this.imagePath(imageId);
@@ -34,4 +36,14 @@ export class FileSystemStorageProvider implements ImageStorage {
     return path.join(this.storagePath, imageId) + ".png";
   }
 
+  private async createStorageDirectory(): Promise<void> {
+    try {
+      await fs.access(this.storagePath);
+      logger.info(`storage directory FOUND: ${this.storagePath}:`);
+    } catch {
+      await fs.mkdir(this.storagePath, { recursive: true });
+      logger.info(`storage directory NOT FOUND`);
+      logger.info(`creating directory: ${this.storagePath}:`);
+    }
+  }
 }
