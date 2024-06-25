@@ -7,7 +7,7 @@ export class CouchDbStorageProvider implements ImageStorage {
   constructor(private readonly couchDB: couchDBNano.ServerScope) {}
 
   get images() {
-    return this.couchDB.use("images");
+    return this.couchDB.use(process.env.COUCHDB_DATABASE ?? "images");
   }
 
   public async fetchImage(imageId: string): Promise<null | Buffer> {
