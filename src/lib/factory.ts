@@ -4,6 +4,7 @@ import nano from "nano";
 
 import { BrowserPool } from "./browser_pool.js";
 import { ImageRenderService, WaitForOptions } from "./image_render.js";
+import { logger } from "./logger.js";
 import { ImageStorage } from "./storage/_base.js";
 import { CouchDbStorageProvider } from "./storage/couch-db.js";
 import { FileSystemStorageProvider } from "./storage/filesystem.js";
@@ -85,6 +86,8 @@ export function createImageStorageService(): ImageStorage {
     default:
       imageStorage = new StubStorageProvider();
   }
+
+  logger.info(imageStorage.constructor.name);
 
   return imageStorage;
 }
