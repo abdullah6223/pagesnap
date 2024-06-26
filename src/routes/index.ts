@@ -18,7 +18,11 @@ export function getIndex(
     let imageBuffer: Buffer | null = await imageStorageService.fetchImage(imageId);
 
     if (imageBuffer === null || input.forceReload) {
-      imageBuffer = await imageRenderService.screenshot(url, input);
+      try {
+        imageBuffer = await imageRenderService.screenshot(url, input);
+      } catch (err: any) {
+        throw new HTTPException(500, { message: err.message });
+      }
 
       try {
         await imageStorageService.storeImage(imageId, imageBuffer);
