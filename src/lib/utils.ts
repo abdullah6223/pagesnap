@@ -1,3 +1,10 @@
+export function formatUrlList(allowList: string): string[] {
+  return allowList.split(",").map(url => {
+    url = url.trim().replace(/https?:\/\//g, "");
+    return new URL(`http://${url}`).host;
+  });
+}
+
 const NON_CACHE_PARAMS = new Set(["url", "hash", "forceReload"]);
 
 export function configToString(configAPI: URLSearchParams) {
