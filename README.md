@@ -20,6 +20,35 @@ Main features:
 - **Health and metrics endpoints**: `GET /ping` and an optional `GET /metrics` that reports browser pool usage.
 - **Usable as a library**: `src/mod.ts` exports the render service, browser pool, schema and storage providers.
 
+## How It Works
+
+Every screenshot request goes through a small chain of Hono middlewares before it reaches the route that renders or loads the image.
+
+```mermaid
+flowchart LR
+    A[Client: GET /?url=...] --> B[secureHeaders]
+    B --> C[Extract query params<br/>decrypt hash, validate with Zod,<br/>clamp sizes, build image ID]
+    C --> D{Block list /<br/>allow list}
+    D -- forbidden --> X[403]
+    D -- allowed --> E[Index route]
+    E --> F{Image in storage<br/>and no forceReload?}
+    F -- yes --> H[Return PNG]
+    F -- no --> G[ImageRenderService<br/>borrow browser from pool,<br/>open page, screenshot,<br/>resize with sharp]
+    G --> S[Save to storage provider]
+    S --> H
+```
+
+1. **Startup** (`src/main.ts`): loads `.env` and builds the storage provider, browser pool and render service from environment variables (`src/lib/factory.ts`). If `CRYPTO_KEY` is set, it also creates the encryption service. Then it starts the Hono app on `PORT` (default `3089`).
+2. **Parsing input** (`src/middlewares/extract_query_params.ts`): reads the query string, or decrypts the `hash` parameter when encryption is enabled. It validates the result against the Zod schema in `src/lib/schema.ts`, caps dimensions at 1920px and builds a stable image ID.
+3. **Access control** (`src/middlewares/block_list.ts`, `allow_list.ts`): if `BLOCK_LIST` or `ALLOW_LIST` is set, the target host is checked, and the request is rejected with `403` when it isn't allowed.
+4. **Cache lookup** (`src/routes/index.ts`): the route asks the storage provider for the image ID. On a hit, the cached PNG is returned straight away.
+5. **Rendering** (`src/lib/image_render.ts`): on a miss, or when `forceReload=true`, a Chromium browser is borrowed from the pool (`src/lib/browser_pool.ts`). It opens a page with the requested viewport, mobile and dark-mode settings and takes the screenshot. `sharp` then resizes the image to the requested width or height.
+6. **Storing and responding**: the PNG is saved to the storage provider and returned with `Content-Type: image/png` and a `Cache-Control` header.
+
+**Image IDs and caching.** The image ID combines today's date, a slug of the URL and the sorted rendering options. `url`, `hash` and `forceReload` don't count as rendering options. As a result, the same request is rendered at most once per day per set of options.
+
+**Encryption mode.** When `CRYPTO_KEY` is set, plain query parameters are rejected. Clients must send `?hash=str-enc:...`, which holds the JSON options encrypted with that key. Without `CRYPTO_KEY`, a `hash` parameter is rejected instead.
+
 ## Usage
 
 Install dependencies and the Chromium browser used for rendering:
@@ -54,16 +83,6 @@ Rendered images can be cached so the same request is not rendered twice. Pick a 
 | Local directory | `filesystem` | `IMAGE_STORAGE_PATH` |
 | Amazon S3 / S3-compatible | `s3` | `AWS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_ENDPOINT_URL_S3`, `AWS_FORCE_PATH_STYLE` |
 | CouchDB | `couchdb` | `COUCH_DB_PROTOCOL`, `COUCH_DB_HOST`, `COUCH_DB_PORT`, `COUCH_DB_USER`, `COUCH_DB_PASS` |
-
-## Encryption
-
-Set `CRYPTO_KEY` to an AES-GCM key in JWK JSON format to turn on encryption mode. The server then rejects plain query parameters, and every request must send its options as one encrypted value:
-
-```
-http://localhost:3089/?hash=str-enc:...
-```
-
-The `hash` value is the JSON options object (for example `{"url":"https://example.com","width":600}`) encrypted with the same key using `@jmondi/string-encrypt-decrypt`. Without `CRYPTO_KEY`, requests that send a `hash` are rejected.
 
 ## Docker
 
