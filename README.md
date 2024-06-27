@@ -49,6 +49,50 @@ flowchart LR
 
 **Encryption mode.** When `CRYPTO_KEY` is set, plain query parameters are rejected. Clients must send `?hash=str-enc:...`, which holds the JSON options encrypted with that key. Without `CRYPTO_KEY`, a `hash` parameter is rejected instead.
 
+## Project Structure
+
+```
+pagesnap/
+├── src/
+│   ├── main.ts                      # Entry point: reads env, wires services, starts the HTTP server
+│   ├── app.ts                       # Builds the Hono app: headers, error handler, middlewares, routes
+│   ├── mod.ts                       # Library exports (render service, pool, schema, storage providers)
+│   ├── routes/
+│   │   └── index.ts                 # GET / - cache lookup, render, store and return the PNG
+│   ├── middlewares/
+│   │   ├── extract_query_params.ts  # Parses/decrypts input, validates it, builds the image ID
+│   │   ├── allow_list.ts            # Rejects hosts that are not in ALLOW_LIST
+│   │   └── block_list.ts            # Rejects hosts that are in BLOCK_LIST
+│   └── lib/
+│       ├── browser_pool.ts          # generic-pool of Playwright Chromium browsers
+│       ├── image_render.ts          # Opens the page, takes the screenshot, resizes with sharp
+│       ├── factory.ts               # Creates pool, render service and storage from env vars
+│       ├── schema.ts                # Zod schema for query parameters and dimension clamping
+│       ├── utils.ts                 # Image ID builder, slugify, domain list parsing
+│       ├── logger.ts                # pino logger
+│       └── storage/
+│           ├── _base.ts             # ImageStorage interface
+│           ├── s3.ts                # Amazon S3 / S3-compatible provider
+│           ├── couch-db.ts          # CouchDB attachment provider
+│           ├── filesystem.ts        # Local directory provider
+│           └── stub.ts              # No-op provider (no caching)
+├── tests/
+│   ├── app.spec.ts                  # HTTP tests for routes, validation and encryption
+│   ├── schema.spec.ts               # Schema and clamping tests
+│   ├── image_id.spec.ts             # Image ID / cache key tests
+│   ├── storage_filesystem.spec.ts   # Filesystem provider tests
+│   ├── storage_couchdb.spec.ts      # CouchDB provider tests with a mocked client
+│   └── helpers/                     # Stub render service and a test image
+├── .env.sample                      # Example environment configuration
+├── Dockerfile                       # Multi-stage image based on the Playwright image
+├── docker-compose.yml               # App plus CouchDB and MinIO for local testing
+├── .mise.toml                       # Tool versions (Node 20, pnpm 9)
+├── tsconfig.json                    # TypeScript config (src + tests)
+├── tsconfig.build.json              # Build config (src only)
+├── package.json                     # Scripts and dependencies
+└── LICENSE                          # MIT license
+```
+
 ## Usage
 
 Install dependencies and the Chromium browser used for rendering:
