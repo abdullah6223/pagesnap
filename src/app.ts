@@ -28,7 +28,11 @@ export function createApplication(
 ) {
   const app = new Hono<AppEnv>();
 
-  app.use(secureHeaders());
+  app.use(
+    secureHeaders({
+      crossOriginResourcePolicy: "cross-origin",
+    }),
+  );
 
   if (process.env.METRICS === "true") {
     app.get("/metrics", c => c.json({ poolMetrics: browserPool.poolMetrics }));
