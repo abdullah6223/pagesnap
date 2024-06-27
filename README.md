@@ -93,6 +93,26 @@ pagesnap/
 └── LICENSE                          # MIT license
 ```
 
+## Tech Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| Runtime | Node.js >= 20 | Runs the service |
+| Language | TypeScript ^5.4.5 | Typed source, compiled with `tsc` |
+| HTTP server | Hono ^4.3.10 + @hono/node-server ^1.11.1 | Routing, middlewares, secure headers |
+| Browser | Playwright ^1.44.1 (Chromium) | Loads pages and takes screenshots |
+| Pooling | generic-pool ^3.9.0 | Reuses browser instances |
+| Image processing | sharp ^0.33.4 | Resizes screenshots |
+| Validation | Zod ^3.23.8 + zod-ff ^1.4.0 | Validates query parameters |
+| Encryption | @jmondi/string-encrypt-decrypt ^0.0.6 | AES-GCM encrypted request options |
+| Storage | @aws-sdk/client-s3 ^3.583.0, nano ^10.1.3, Node `fs` | S3, CouchDB and filesystem caching |
+| Logging | pino ^9.1.0, pino-pretty ^11.1.0 | Structured logs, pretty output in dev |
+| Config | dotenv ^16.4.5 | Loads `.env` |
+| Testing | Vitest ^1.6.0, @vitest/coverage-v8 ^1.6.0 | Unit and HTTP tests, coverage |
+| Dev tooling | tsx ^4.11.0, Prettier ^3.2.5, npm-run-all ^4.1.5 | Watch mode, formatting, script chaining |
+| Package manager | pnpm >= 9 | Dependency management |
+| Deployment | Docker (Playwright v1.44.1 image), Docker Compose | Container image and local stack |
+
 ## Usage
 
 Install dependencies and the Chromium browser used for rendering:
