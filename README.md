@@ -49,6 +49,32 @@ flowchart LR
 
 **Encryption mode.** When `CRYPTO_KEY` is set, plain query parameters are rejected. Clients must send `?hash=str-enc:...`, which holds the JSON options encrypted with that key. Without `CRYPTO_KEY`, a `hash` parameter is rejected instead.
 
+### Query parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `url` | string (required) | Page to capture; must start with `http://` or `https://` |
+| `width` | number | Output image width in pixels (max 1920) |
+| `height` | number | Output image height in pixels (max 1920); applied only to full-page captures when `width` is not set |
+| `viewportWidth` | number | Browser viewport width (default 1080, max 1920) |
+| `viewportHeight` | number | Browser viewport height (default 1080, max 1920) |
+| `isFullPage` | `true`/`false` | Capture the whole scrollable page |
+| `isMobile` | `true`/`false` | Emulate a mobile device |
+| `isDarkMode` | `true`/`false` | Render with the `dark` color scheme |
+| `deviceScaleFactor` | number | Device pixel ratio (default 1) |
+| `forceReload` | `true`/`false` | Ignore the cache and render again |
+| `hash` | string | Encrypted options (only when `CRYPTO_KEY` is set) |
+
+If neither `width` nor `height` is given, the image is resized to 250px wide (the default viewport is square, so a normal capture comes out 250×250). The aspect ratio is always kept.
+
+### Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/` | Render or fetch a screenshot (see query parameters) |
+| `GET` | `/ping` | Health check, returns `"pong"` |
+| `GET` | `/metrics` | Browser pool metrics (only when `METRICS=true`) |
+
 ## Project Structure
 
 ```
