@@ -163,6 +163,38 @@ http://localhost:3089/?url=https://example.com&width=600&isFullPage=true
 
 Configuration is read from environment variables. Copy `.env.sample` to `.env` and adjust it.
 
+### Environment variables
+
+| Variable | Description | Example |
+|---|---|---|
+| `PORT` | Port to listen on | `3089` |
+| `LOG_LEVEL` | `debug`, `info`, `warn` or `error` | `info` |
+| `NODE_ENV` | `development` or `production` | `development` |
+| `ALLOW_LIST` | Comma-separated hosts that may be captured | `example.com,github.com` |
+| `BLOCK_LIST` | Comma-separated hosts that may not be captured | `example.org` |
+| `CACHE_CONTROL` | `Cache-Control` header for image responses | `public, max-age=86400, immutable` |
+| `BROWSER_TIMEOUT` | Page load timeout in ms | `10000` |
+| `BROWSER_WAIT_UNTIL` | `load`, `domcontentloaded` or `networkidle` | `domcontentloaded` |
+| `POOL_MIN` / `POOL_MAX` | Minimum / maximum browsers in the pool | `2` / `10` |
+| `POOL_MAX_WAITING_CLIENTS` | Max queued requests waiting for a browser | `50` |
+| `POOL_IDLE_TIMEOUT_MS` | Idle time before a browser is closed | `15000` |
+| `METRICS` | Enable `GET /metrics` | `false` |
+| `CRYPTO_KEY` | AES-GCM key as JWK JSON; enables encryption mode | `{"kty":"oct",...}` |
+| `DEFAULT_WIDTH` / `DEFAULT_HEIGHT` | Default output size | `250` / `250` |
+| `DEFAULT_VIEWPORT_WIDTH` / `DEFAULT_VIEWPORT_HEIGHT` | Default viewport size | `1080` / `1080` |
+| `DEFAULT_IS_MOBILE` / `DEFAULT_IS_FULL_PAGE` / `DEFAULT_IS_DARK_MODE` | Default flags | `false` |
+| `DEFAULT_DEVICE_SCALE_FACTOR` | Default device pixel ratio | `1` |
+| `STORAGE_PROVIDER` | `stub`, `filesystem`, `s3` or `couchdb` | `stub` |
+| `IMAGE_STORAGE_PATH` | Directory for the `filesystem` provider | `./storage` |
+| `AWS_BUCKET` | Bucket for the `s3` provider | `my-screenshots` |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | S3 credentials | `your-access-key` |
+| `AWS_DEFAULT_REGION` | S3 region | `us-east-1` |
+| `AWS_ENDPOINT_URL_S3` | Custom S3 endpoint (e.g. MinIO) | `http://localhost:9000` |
+| `AWS_FORCE_PATH_STYLE` | Use path-style S3 URLs | `false` |
+| `COUCH_DB_PROTOCOL` / `COUCH_DB_HOST` / `COUCH_DB_PORT` | CouchDB connection | `http` / `localhost` / `5984` |
+| `COUCH_DB_USER` / `COUCH_DB_PASS` | CouchDB credentials | `admin` / `your-password` |
+| `COUCHDB_DATABASE` | CouchDB database name | `images` |
+
 ## Storage Providers
 
 Rendered images can be cached so the same request is not rendered twice. Pick a provider with `STORAGE_PROVIDER`:
