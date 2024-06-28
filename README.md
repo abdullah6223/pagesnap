@@ -199,7 +199,14 @@ pagesnap/
    | `COUCH_DB_USER` / `COUCH_DB_PASS` | CouchDB credentials | `admin` / `your-password` |
    | `COUCHDB_DATABASE` | CouchDB database name | `images` |
 
-5. **Run**
+5. **Storage setup**
+
+   No database is needed with the default `stub` provider.
+   - `filesystem`: the directory in `IMAGE_STORAGE_PATH` is created on startup if it doesn't exist.
+   - `s3`: the bucket in `AWS_BUCKET` must already exist.
+   - `couchdb`: the database (default `images`) must already exist. `docker compose up` creates it for you.
+
+6. **Run**
 
    Development (watch mode with pretty logs):
 
@@ -221,32 +228,29 @@ pagesnap/
    http://localhost:3089/?url=https://example.com&width=600&isFullPage=true
    ```
 
-6. **Run tests**
+7. **Run tests**
 
    ```bash
    pnpm test
    pnpm test:coverage
    ```
 
-## Storage Providers
+8. **Docker**
 
-Rendered images can be cached so the same request is not rendered twice. Pick a provider with `STORAGE_PROVIDER`:
+   Build and run the image:
 
-| Provider | Value | Settings |
-|---|---|---|
-| None (default) | `stub` | none |
-| Local directory | `filesystem` | `IMAGE_STORAGE_PATH` |
-| Amazon S3 / S3-compatible | `s3` | `AWS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_ENDPOINT_URL_S3`, `AWS_FORCE_PATH_STYLE` |
-| CouchDB | `couchdb` | `COUCH_DB_PROTOCOL`, `COUCH_DB_HOST`, `COUCH_DB_PORT`, `COUCH_DB_USER`, `COUCH_DB_PASS` |
+   ```bash
+   docker build -t pagesnap .
+   docker run --rm -p 3089:3089 pagesnap
+   ```
 
-## Docker
+   Or start the app with CouchDB and MinIO for local testing:
 
-```bash
-docker build -t pagesnap .
-docker run --rm -p 3089:3089 pagesnap
-```
+   ```bash
+   docker compose up --build
+   ```
 
-`docker compose up --build` starts the app together with CouchDB and MinIO for local testing.
+   The compose file runs the app on port `3089` with the CouchDB provider, CouchDB on `5984` and MinIO on `9000`/`9001` (console). To use MinIO instead, uncomment the `s3` settings in `docker-compose.yml`.
 
 ## License
 
