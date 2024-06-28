@@ -139,61 +139,94 @@ pagesnap/
 | Package manager | pnpm >= 9 | Dependency management |
 | Deployment | Docker (Playwright v1.44.1 image), Docker Compose | Container image and local stack |
 
-## Usage
+## How to Run This Project
 
-Install dependencies and the Chromium browser used for rendering:
+1. **Prerequisites**
+   - Node.js 20 or newer
+   - pnpm 9 or newer (`package.json` has `engineStrict` set)
+   - Optional: Docker and Docker Compose
+   - Optional: an S3 bucket or a CouchDB server, if you want caching
 
-```bash
-pnpm install
-pnpm exec playwright install chromium
-```
+2. **Clone**
 
-Start the server in watch mode:
+   ```bash
+   git clone https://github.com/abdullah6223/pagesnap.git
+   cd pagesnap
+   ```
 
-```bash
-pnpm dev
-```
+3. **Install dependencies**
 
-Then request a screenshot:
+   ```bash
+   pnpm install
+   pnpm exec playwright install chromium
+   ```
 
-```
-http://localhost:3089/?url=https://example.com
-http://localhost:3089/?url=https://example.com&width=600&isFullPage=true
-```
+4. **Environment variables**
 
-Configuration is read from environment variables. Copy `.env.sample` to `.env` and adjust it.
+   Copy the sample file and edit it:
 
-### Environment variables
+   ```bash
+   cp .env.sample .env
+   ```
 
-| Variable | Description | Example |
-|---|---|---|
-| `PORT` | Port to listen on | `3089` |
-| `LOG_LEVEL` | `debug`, `info`, `warn` or `error` | `info` |
-| `NODE_ENV` | `development` or `production` | `development` |
-| `ALLOW_LIST` | Comma-separated hosts that may be captured | `example.com,github.com` |
-| `BLOCK_LIST` | Comma-separated hosts that may not be captured | `example.org` |
-| `CACHE_CONTROL` | `Cache-Control` header for image responses | `public, max-age=86400, immutable` |
-| `BROWSER_TIMEOUT` | Page load timeout in ms | `10000` |
-| `BROWSER_WAIT_UNTIL` | `load`, `domcontentloaded` or `networkidle` | `domcontentloaded` |
-| `POOL_MIN` / `POOL_MAX` | Minimum / maximum browsers in the pool | `2` / `10` |
-| `POOL_MAX_WAITING_CLIENTS` | Max queued requests waiting for a browser | `50` |
-| `POOL_IDLE_TIMEOUT_MS` | Idle time before a browser is closed | `15000` |
-| `METRICS` | Enable `GET /metrics` | `false` |
-| `CRYPTO_KEY` | AES-GCM key as JWK JSON; enables encryption mode | `{"kty":"oct",...}` |
-| `DEFAULT_WIDTH` / `DEFAULT_HEIGHT` | Default output size | `250` / `250` |
-| `DEFAULT_VIEWPORT_WIDTH` / `DEFAULT_VIEWPORT_HEIGHT` | Default viewport size | `1080` / `1080` |
-| `DEFAULT_IS_MOBILE` / `DEFAULT_IS_FULL_PAGE` / `DEFAULT_IS_DARK_MODE` | Default flags | `false` |
-| `DEFAULT_DEVICE_SCALE_FACTOR` | Default device pixel ratio | `1` |
-| `STORAGE_PROVIDER` | `stub`, `filesystem`, `s3` or `couchdb` | `stub` |
-| `IMAGE_STORAGE_PATH` | Directory for the `filesystem` provider | `./storage` |
-| `AWS_BUCKET` | Bucket for the `s3` provider | `my-screenshots` |
-| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | S3 credentials | `your-access-key` |
-| `AWS_DEFAULT_REGION` | S3 region | `us-east-1` |
-| `AWS_ENDPOINT_URL_S3` | Custom S3 endpoint (e.g. MinIO) | `http://localhost:9000` |
-| `AWS_FORCE_PATH_STYLE` | Use path-style S3 URLs | `false` |
-| `COUCH_DB_PROTOCOL` / `COUCH_DB_HOST` / `COUCH_DB_PORT` | CouchDB connection | `http` / `localhost` / `5984` |
-| `COUCH_DB_USER` / `COUCH_DB_PASS` | CouchDB credentials | `admin` / `your-password` |
-| `COUCHDB_DATABASE` | CouchDB database name | `images` |
+   | Variable | Description | Example |
+   |---|---|---|
+   | `PORT` | Port to listen on | `3089` |
+   | `LOG_LEVEL` | `debug`, `info`, `warn` or `error` | `info` |
+   | `NODE_ENV` | `development` or `production` | `development` |
+   | `ALLOW_LIST` | Comma-separated hosts that may be captured | `example.com,github.com` |
+   | `BLOCK_LIST` | Comma-separated hosts that may not be captured | `example.org` |
+   | `CACHE_CONTROL` | `Cache-Control` header for image responses | `public, max-age=86400, immutable` |
+   | `BROWSER_TIMEOUT` | Page load timeout in ms | `10000` |
+   | `BROWSER_WAIT_UNTIL` | `load`, `domcontentloaded` or `networkidle` | `domcontentloaded` |
+   | `POOL_MIN` / `POOL_MAX` | Minimum / maximum browsers in the pool | `2` / `10` |
+   | `POOL_MAX_WAITING_CLIENTS` | Max queued requests waiting for a browser | `50` |
+   | `POOL_IDLE_TIMEOUT_MS` | Idle time before a browser is closed | `15000` |
+   | `METRICS` | Enable `GET /metrics` | `false` |
+   | `CRYPTO_KEY` | AES-GCM key as JWK JSON; enables encryption mode | `{"kty":"oct",...}` |
+   | `DEFAULT_WIDTH` / `DEFAULT_HEIGHT` | Default output size | `250` / `250` |
+   | `DEFAULT_VIEWPORT_WIDTH` / `DEFAULT_VIEWPORT_HEIGHT` | Default viewport size | `1080` / `1080` |
+   | `DEFAULT_IS_MOBILE` / `DEFAULT_IS_FULL_PAGE` / `DEFAULT_IS_DARK_MODE` | Default flags | `false` |
+   | `DEFAULT_DEVICE_SCALE_FACTOR` | Default device pixel ratio | `1` |
+   | `STORAGE_PROVIDER` | `stub`, `filesystem`, `s3` or `couchdb` | `stub` |
+   | `IMAGE_STORAGE_PATH` | Directory for the `filesystem` provider | `./storage` |
+   | `AWS_BUCKET` | Bucket for the `s3` provider | `my-screenshots` |
+   | `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | S3 credentials | `your-access-key` |
+   | `AWS_DEFAULT_REGION` | S3 region | `us-east-1` |
+   | `AWS_ENDPOINT_URL_S3` | Custom S3 endpoint (e.g. MinIO) | `http://localhost:9000` |
+   | `AWS_FORCE_PATH_STYLE` | Use path-style S3 URLs | `false` |
+   | `COUCH_DB_PROTOCOL` / `COUCH_DB_HOST` / `COUCH_DB_PORT` | CouchDB connection | `http` / `localhost` / `5984` |
+   | `COUCH_DB_USER` / `COUCH_DB_PASS` | CouchDB credentials | `admin` / `your-password` |
+   | `COUCHDB_DATABASE` | CouchDB database name | `images` |
+
+5. **Run**
+
+   Development (watch mode with pretty logs):
+
+   ```bash
+   pnpm dev
+   ```
+
+   Production:
+
+   ```bash
+   pnpm build
+   pnpm serve
+   ```
+
+   The server logs `Server is running on port http://localhost:3089/ping`. Try:
+
+   ```
+   http://localhost:3089/?url=https://example.com
+   http://localhost:3089/?url=https://example.com&width=600&isFullPage=true
+   ```
+
+6. **Run tests**
+
+   ```bash
+   pnpm test
+   pnpm test:coverage
+   ```
 
 ## Storage Providers
 
