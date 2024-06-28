@@ -1,6 +1,7 @@
 {
   "name": "pagesnap",
   "version": "2.1.4",
+  "description": "Self-hosted service that renders any URL to an image.",
   "type": "module",
   "main": "dist/mod.js",
   "scripts": {
@@ -18,6 +19,10 @@
     "node": ">= 20",
     "pnpm": ">= 9.0.0"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "engineStrict": true,
   "dependencies": {
     "@aws-sdk/client-s3": "^3.583.0",
